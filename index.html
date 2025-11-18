@@ -2821,56 +2821,58 @@ setupFormListener('forgot-password-form', async function(e) {
                     };
                 }));
 
-                // Now generate the HTML for all events
-                eventsWithRegistrations.forEach(event => {
-                    const eventDate = new Date(event.event_date);
-                    const day = eventDate.getDate();
-                    const month = eventDate.toLocaleDateString('en-US', { month: 'long' });
-                    const year = eventDate.getFullYear();
-                    const time = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-                    
-                    const eventCard = document.createElement('div');
-                    eventCard.className = 'event-card bg-white hover-lift';
-                    eventCard.innerHTML = `
-                        <div class="flex">
-                            <div class="event-date text-white p-6 text-center w-24 flex flex-col justify-center">
-                                <div class="text-3xl font-bold">${day}</div>
-                                <div class="text-sm">${month}</div>
-                                <div class="text-sm">${year}</div>
-                            </div>
-                            <div class="flex-1 p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium" data-bn="আসন্ন" data-en="Upcoming">Upcoming</span>
-                                    <span class="text-gray-500 text-sm"><i class="far fa-clock mr-1"></i>${time}</span>
-                                </div>
-                                <h3 class="text-xl font-bold text-primary mb-3">${event.title}</h3>
-                                <p class="text-gray-600 mb-4">${event.description}</p>
-                                <div class="flex items-center text-gray-500 mb-4">
-                                    <i class="fas fa-map-marker-alt mr-2 text-accent"></i>
-                                    <span>${event.venue}</span>
-                                </div>
-                                ${currentUser ? `
-                                <button class="register-event-btn bg-accent hover:bg-orange-600 text-white font-medium py-2 px-6 rounded-lg transition btn-icon" data-event-id="${event.id}">
-                                    <i class="fas fa-user-plus"></i>
-                                    <span data-bn="রেজিস্টার করুন" data-en="Register">Register</span>
-                                </button>
-                                ` : `
-                                <button class="bg-gray-400 text-white font-medium py-2 px-6 rounded-lg cursor-not-allowed btn-icon">
-                                    <i class="fas fa-sign-in-alt"></i>
-                                    <span data-bn="রেজিস্টার করতে লগইন করুন" data-en="Login to Register">Login to Register</span>
-                                </button>
-                                `}
-                                <div class="mt-2 text-sm text-gray-500">
-                                    <i class="fas fa-users mr-1"></i>
-                                    <span data-bn="রেজিস্ট্রেশন: " data-en="Registrations: ">Registrations: </span>
-                                    <span id="event-reg-count-${event.id}">${event.regCount}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    container.appendChild(eventCard);
-                });
+                // Build HTML string first, then set it once
+let eventsHTML = '';
+eventsWithRegistrations.forEach(event => {
+    const eventDate = new Date(event.event_date);
+    const day = eventDate.getDate();
+    const month = eventDate.toLocaleDateString('en-US', { month: 'long' });
+    const year = eventDate.getFullYear();
+    const time = eventDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    
+    eventsHTML += `
+        <div class="event-card bg-white hover-lift">
+            <div class="flex">
+                <div class="event-date text-white p-6 text-center w-24 flex flex-col justify-center">
+                    <div class="text-3xl font-bold">${day}</div>
+                    <div class="text-sm">${month}</div>
+                    <div class="text-sm">${year}</div>
+                </div>
+                <div class="flex-1 p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium" data-bn="আসন্ন" data-en="Upcoming">Upcoming</span>
+                        <span class="text-gray-500 text-sm"><i class="far fa-clock mr-1"></i>${time}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-primary mb-3">${event.title}</h3>
+                    <p class="text-gray-600 mb-4">${event.description}</p>
+                    <div class="flex items-center text-gray-500 mb-4">
+                        <i class="fas fa-map-marker-alt mr-2 text-accent"></i>
+                        <span>${event.venue}</span>
+                    </div>
+                    ${currentUser ? `
+                    <button class="register-event-btn bg-accent hover:bg-orange-600 text-white font-medium py-2 px-6 rounded-lg transition btn-icon" data-event-id="${event.id}">
+                        <i class="fas fa-user-plus"></i>
+                        <span data-bn="রেজিস্টার করুন" data-en="Register">Register</span>
+                    </button>
+                    ` : `
+                    <button class="bg-gray-400 text-white font-medium py-2 px-6 rounded-lg cursor-not-allowed btn-icon">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span data-bn="রেজিস্টার করতে লগইন করুন" data-en="Login to Register">Login to Register</span>
+                    </button>
+                    `}
+                    <div class="mt-2 text-sm text-gray-500">
+                        <i class="fas fa-users mr-1"></i>
+                        <span data-bn="রেজিস্ট্রেশন: " data-en="Registrations: ">Registrations: </span>
+                        <span id="event-reg-count-${event.id}">${event.regCount}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+});
+
+// Set the HTML once
+container.innerHTML = eventsHTML;
 
                 switchLanguage(currentLanguage);
 
